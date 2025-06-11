@@ -1,28 +1,28 @@
 # GNU Makefile
 
 CC=gcc
+LD=ld
 INCLUDE=-I../src
-CFLAGS=${INCLUDE} ${SRC}
-LDFLAGS=
-
+CFLAGS=${INCLUDE} -O0
 LIB_SOURCES=../src/DAA.h ../src/DAA.c
-SOURCES= $(LIB_SOURCES)
-
 OUTPUT=build/
 
-all: create-output-folder LinearArena SmartArena SpeedTest
+all: create-output-folder DAA LinearArena SmartArena SpeedTest
 
 create-output-folder:
 	mkdir -p ${OUTPUT}
 
-LinearArena:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) LinearArena.c -o ${OUTPUT}LinearArena
+DAA:
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LIB_SOURCES) -c DAA.o
 
-SmartArena:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) SmartArena.c -o ${OUTPUT}SmartArena
+LinearArena: DAA
+	$(CC) $(CFLAGS) $(LDFLAGS) LinearArena.c DAA.o -o ${OUTPUT}LinearArena
 
-SpeedTest:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) SpeedTest.c -o ${OUTPUT}SpeedTest
+SmartArena: DAA
+	$(CC) $(CFLAGS) $(LDFLAGS) SmartArena.c DAA.o -o ${OUTPUT}SmartArena.o
+
+SpeedTest: DAA
+	$(CC) $(CFLAGS) $(LDFLAGS) SpeedTest.c DAA.o -o ${OUTPUT}SpeedTest.o
 
 clean:
 	rm -r ${OUTPUT}
