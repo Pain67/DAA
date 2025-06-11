@@ -1,99 +1,18 @@
-#ifndef DAA_HEADER
-#define DAA_HEADER
+#include "DAA.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-
-// -------------------------------------------------------------------------------------------------
-
-#define bool unsigned char
-#define false 0
-#define true 1
-
-#ifndef DAA_REGION_SIZE
-#define DAA_REGION_SIZE 1024
-#endif
-
-// -------------------------------------------------------------------------------------------------
-// Types
-
-typedef struct daaLinearRegion {
-    size_t Capacity;
-    size_t Size;
-    size_t AllocNum;
-    uint16_t* Data;
-    void* Next;
-} daaLinearRegion;
-
-typedef struct daaLinearArena {
-    daaLinearRegion* FirstRegion;
-    daaLinearRegion* CurrRegion;
-    size_t RegionCount;
-} daaLinearArena;
-
-
-typedef struct daaSmartRegionAllocEntry {
-    size_t Size;
-    uint16_t isAlloc;
-    void* Next;
-    void* Prev;
-} daaSmartRegionAllocEntry;
-
-typedef struct daaSmartRegion {
-    size_t Capacity;
-    size_t AllocNum;
-    daaSmartRegionAllocEntry* AllocList;
-    uint16_t* Data;
-    void* Next;
-    void* Prev;
-} daaSmartRegion;
-
-typedef struct daaSmartArena{
-    daaSmartRegion* FirstRegion;
-    daaSmartRegion* CurrRegion;
-    size_t RegionCount;
-} daaSmartArena;
-
-
-// -------------------------------------------------------------------------------------------------
-// Headers
-
-// Panic
-void daaPANIC(char* IN_Msg);
-
-// Linear Arena
-daaLinearRegion* daaInitLinearRegion();
-void* daaLinearAlloc(daaLinearArena* IN_Arena, size_t IN_AllocSize);
-void daaLinearFree(daaLinearArena* IN_Arena);
-void daaPrintLinearArenaRegion(daaLinearRegion* IN_Region);
-void daaPrintLinearArena(daaLinearArena* IN_Arena);
-
-// Smart Arena
-daaSmartRegion* daaInitSmartRegion();
-void* daaSmartRegionAlloc(daaSmartRegion* IN_Region, size_t IN_AllocSize);
-bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr);
-void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize);
-void daaSmartFree(daaSmartArena* IN_Arena, void* IN_Ptr);
-void daaSmartFreeArena(daaSmartArena* IN_Arena);
-void daaPrintSmartRegion(daaSmartRegion* IN_Region);
-void daaPrintSmartRegionMap(daaSmartRegion* IN_Region, size_t IN_Cols);
-void daaPrintSmartArena(daaSmartArena* IN_Arena);
-
-// -------------------------------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------------------------------
 // Implementations
-
-#ifdef DAA_IMPLEMENTATION
+// -------------------------------------------------------------------------------------------------
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // Panic
-void daaPANIC(char* IN_Msg) {
+void daaPANIC(const char* IN_Msg) {
     printf("----- Arena Panic -----\n");
     printf("Reson: %s\n", IN_Msg);
     printf("Terminating with non-zero exit code [67]\n");
@@ -102,7 +21,6 @@ void daaPANIC(char* IN_Msg) {
 }
 
 // LINEAR ARENA
-
 daaLinearRegion* daaInitLinearRegion() {
     daaLinearRegion* Result = malloc(sizeof(daaLinearRegion));
     if (Result == NULL) {
@@ -119,6 +37,7 @@ daaLinearRegion* daaInitLinearRegion() {
 
     return Result;
 }
+
 void* daaLinearAlloc(daaLinearArena* IN_Arena, size_t IN_AllocSize) {
     if (IN_AllocSize > DAA_REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
 
@@ -143,6 +62,7 @@ void* daaLinearAlloc(daaLinearArena* IN_Arena, size_t IN_AllocSize) {
     IN_Arena->CurrRegion->AllocNum++;
     return Result;
 }
+
 void daaLinearFree(daaLinearArena* IN_Arena) {
     daaLinearRegion* CurrRegion = IN_Arena->FirstRegion;
     while (CurrRegion != NULL) {
@@ -165,6 +85,7 @@ void daaPrintLinearArenaRegion(daaLinearRegion* IN_Region) {
         IN_Region->Data
     );
 }
+
 void daaPrintLinearArena(daaLinearArena* IN_Arena) {
     printf("Linear Arena {\n");
     daaLinearRegion* CurrRegion = IN_Arena->FirstRegion;
@@ -183,9 +104,7 @@ void daaPrintLinearArena(daaLinearArena* IN_Arena) {
     printf("}\n");
 }
 
-
 // SMART ARENA
-
 daaSmartRegion* daaInitSmartRegion() {
     daaSmartRegion* Result = malloc(sizeof(daaSmartRegion));
     if (Result == NULL) {
@@ -292,7 +211,6 @@ bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr) {
     return false;
 }
 
-
 void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize) {
     if (IN_AllocSize > DAA_REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
 
@@ -322,6 +240,7 @@ void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize) {
 
     return Result;
 }
+
 void daaSmartFree(daaSmartArena* IN_Arena, void* IN_Ptr) {
     if (IN_Ptr == NULL) { return; }
 
@@ -335,8 +254,9 @@ void daaSmartFree(daaSmartArena* IN_Arena, void* IN_Ptr) {
 
     daaPrintSmartArena(IN_Arena);
     printf("%p\n", IN_Ptr);
-    daaPANIC("Attempting to free an unknow pointr");
+    daaPANIC("Attempting to free an unknown pointer");
 }
+
 void daaSmartFreeArena(daaSmartArena* IN_Arena) {
     daaSmartRegion* CurrRegion = IN_Arena->FirstRegion;
     while (CurrRegion != NULL) {
@@ -378,6 +298,7 @@ void daaPrintSmartRegion(daaSmartRegion* IN_Region) {
     }
     printf("}\n");
 }
+
 void daaPrintSmartRegionMap(daaSmartRegion* IN_Region, size_t IN_Cols) {
     char CurrChar[2] = { 0 };
     size_t Pos = 0;
@@ -400,6 +321,7 @@ void daaPrintSmartRegionMap(daaSmartRegion* IN_Region, size_t IN_Cols) {
     }
     printf("}\n");
 }
+
 void daaPrintSmartArena(daaSmartArena* IN_Arena) {
     printf("------------------------------------------------------\n");
     printf("Smart Arena: \n\n");
@@ -418,16 +340,6 @@ void daaPrintSmartArena(daaSmartArena* IN_Arena) {
     printf("------------------------------------------------------\n");
 }
 
-// Close tag for extern C if needed
 #ifdef __cplusplus
 }
-#endif
-
-
-//ifdef DAA_IMPLEMENTATION
-#endif
-
-// -------------------------------------------------------------------------------------------------
-
-//ifndef DAA_HEADER
 #endif

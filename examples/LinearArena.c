@@ -1,5 +1,5 @@
 #define DAA_IMPLEMENTATION
-#include "../src/DAA.c"
+#include "DAA.h"
 
 int main() {
 
