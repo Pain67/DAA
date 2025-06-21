@@ -1,8 +1,7 @@
-
 #define DAA_REGION_SIZE 4 * 1024
 
 #define DAA_IMPLEMENTATION
-#include "../src/DAA.c"
+#include "DAA.h"
 
 #include <stdlib.h>
 #include <stdio.h>
