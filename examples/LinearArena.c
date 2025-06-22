@@ -1,5 +1,6 @@
 #define DAA_IMPLEMENTATION
 #include "DAA.h"
+#include <stdlib.h>
 
 int main() {
 
