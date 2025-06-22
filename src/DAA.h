@@ -38,6 +38,7 @@ typedef struct daaSmartRegion {
     uint16_t* Data;
     void* Next;
     void* Prev;
+    size_t FreeCount;
 } daaSmartRegion;
 
 typedef struct daaSmartArena{

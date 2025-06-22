@@ -160,6 +160,7 @@ daaSmartRegion* daaInitSmartRegion(size_t IN_RegionSize) {
     Result->AllocList->Size = IN_RegionSize;
     Result->AllocList->isAlloc = 0;
     Result->AllocList->Next = NULL;
+    Result->FreeCount = 1;
 
     return Result;
 }
@@ -190,6 +191,7 @@ void* daaSmartRegionAlloc(daaSmartRegion* IN_Region, size_t IN_AllocSize) {
             else if (CurrAlloc->Size == IN_AllocSize) {
                 CurrAlloc->isAlloc = 1;
                 IN_Region->AllocNum++;
+                IN_Region->FreeCount--;
 
                 return Result;
             }
@@ -209,6 +211,7 @@ bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr) {
         if (CurrAlloc->isAlloc == 1) {
             if (BasePtr == IN_Ptr)  {
                 CurrAlloc->isAlloc = 0;
+                bool isMerged = false;
 
                 // Check Next Region
                 if (CurrAlloc->Next != NULL) {
@@ -218,6 +221,7 @@ bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr) {
                         CurrAlloc->Size += Next->Size;
                         free(Next);
                         CurrAlloc->Next = Temp;
+                        isMerged = true;
                     }
                 }
 
@@ -231,10 +235,12 @@ bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr) {
                         free(Prev);
                         if (Temp != NULL) { Temp->Next = CurrAlloc; }
                         else { IN_Region->AllocList = CurrAlloc; }
+                        isMerged = true;
                     }
                 }
 
                 IN_Region->AllocNum--;
+                if (!isMerged) { IN_Region->FreeCount++; }
 
                 return true;
             }
@@ -259,8 +265,10 @@ void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize) {
 
     daaSmartRegion* CurrRegion = IN_Arena->FirstRegion;
     while (CurrRegion != NULL) {
-        void* Result = daaSmartRegionAlloc(CurrRegion, IN_AllocSize);
-        if (Result != NULL) { return Result; }
+        if (CurrRegion->FreeCount > 0) {
+            void* Result = daaSmartRegionAlloc(CurrRegion, IN_AllocSize);
+            if (Result != NULL) { return Result; }
+        }
         CurrRegion = CurrRegion->Next;
     }
 
@@ -322,6 +330,7 @@ void daaPrintSmartRegion(daaSmartRegion* IN_Region) {
 
     printf("SmartRegion {\n");
     printf("Allocations: %zu\n", IN_Region->AllocNum);
+    printf("Free Count: %zu\n", IN_Region->FreeCount);
     while (CurrAlloc != NULL) {
         printf(
             "    Allocation { Offset: %zu; Size: %zu; Type: %d; Addr: %p }\n",
