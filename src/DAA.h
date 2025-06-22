@@ -5,10 +5,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifndef DAA_REGION_SIZE
-#define DAA_REGION_SIZE 1024
-#endif
-
 // -------------------------------------------------------------------------------------------------
 // Types
 // -------------------------------------------------------------------------------------------------
@@ -22,6 +18,7 @@ typedef struct daaLinearRegion {
 } daaLinearRegion;
 
 typedef struct daaLinearArena {
+    size_t REGION_SIZE;
     daaLinearRegion* FirstRegion;
     daaLinearRegion* CurrRegion;
     size_t RegionCount;
@@ -44,6 +41,7 @@ typedef struct daaSmartRegion {
 } daaSmartRegion;
 
 typedef struct daaSmartArena{
+    size_t REGION_SIZE;
     daaSmartRegion* FirstRegion;
     daaSmartRegion* CurrRegion;
     size_t RegionCount;
@@ -61,7 +59,9 @@ extern "C" {
 void daaPANIC(const char *IN_Msg);
 
 // Linear Arena
-daaLinearRegion *daaInitLinearRegion();
+daaLinearArena* daaCreateLinearArena(size_t IN_RegionSize);
+
+daaLinearRegion *daaInitLinearRegion(size_t IN_RegionSize);
 
 void *daaLinearAlloc(daaLinearArena *IN_Arena, size_t IN_AllocSize);
 
@@ -71,8 +71,12 @@ void daaPrintLinearArenaRegion(daaLinearRegion *IN_Region);
 
 void daaPrintLinearArena(daaLinearArena *IN_Arena);
 
+void daaFreeLinearArena(daaLinearArena* IN_Arena);
+
 // Smart Arena
-daaSmartRegion *daaInitSmartRegion();
+daaSmartArena* daaCreateSmartArena(size_t IN_RegionSize);
+
+daaSmartRegion *daaInitSmartRegion(size_t IN_RegionSize);
 
 void *daaSmartRegionAlloc(daaSmartRegion *IN_Region, size_t IN_AllocSize);
 

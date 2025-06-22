@@ -21,15 +21,30 @@ void daaPANIC(const char* IN_Msg) {
 }
 
 // LINEAR ARENA
-daaLinearRegion* daaInitLinearRegion() {
+daaLinearArena* daaCreateLinearArena(size_t IN_RegionSize) {
+    if (IN_RegionSize < 8) {
+        daaPANIC("Failed to create new LinearArena. Requested region size is below minimum limit.");
+    }
+
+    daaLinearArena* NewArena = malloc(sizeof(daaLinearArena));
+
+    NewArena->REGION_SIZE = IN_RegionSize;
+    NewArena->FirstRegion = NULL;
+    NewArena->CurrRegion = NULL;
+    NewArena->RegionCount = 0;
+
+    return NewArena;
+}
+
+daaLinearRegion* daaInitLinearRegion(size_t IN_RegionSize) {
     daaLinearRegion* Result = malloc(sizeof(daaLinearRegion));
     if (Result == NULL) {
         daaPANIC("Failed to allocate memory for new region.");
     }
-    Result->Capacity = DAA_REGION_SIZE;
+    Result->Capacity = IN_RegionSize;
     Result->Size = 0;
     Result->AllocNum = 0;
-    Result->Data = malloc(DAA_REGION_SIZE);
+    Result->Data = malloc(IN_RegionSize);
     if (Result->Data  == NULL) {
         daaPANIC("Failed to allocate memory for region data.");
     }
@@ -39,10 +54,11 @@ daaLinearRegion* daaInitLinearRegion() {
 }
 
 void* daaLinearAlloc(daaLinearArena* IN_Arena, size_t IN_AllocSize) {
-    if (IN_AllocSize > DAA_REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
+    if (IN_Arena == NULL) { daaPANIC("Failed to allocate, Arena is NULL"); }
+    if (IN_AllocSize > IN_Arena->REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
 
     if (IN_Arena->FirstRegion == NULL) {
-        IN_Arena->FirstRegion = daaInitLinearRegion();
+        IN_Arena->FirstRegion = daaInitLinearRegion(IN_Arena->REGION_SIZE);
         IN_Arena->CurrRegion = IN_Arena->FirstRegion;
         IN_Arena->RegionCount = 1;
     }
@@ -54,7 +70,7 @@ void* daaLinearAlloc(daaLinearArena* IN_Arena, size_t IN_AllocSize) {
         return Result;
     }
 
-    IN_Arena->CurrRegion->Next = daaInitLinearRegion();
+    IN_Arena->CurrRegion->Next = daaInitLinearRegion(IN_Arena->REGION_SIZE);
     IN_Arena->RegionCount++;
     IN_Arena->CurrRegion = IN_Arena->CurrRegion->Next;
     void* Result = &IN_Arena->CurrRegion->Data[0];
@@ -104,15 +120,33 @@ void daaPrintLinearArena(daaLinearArena* IN_Arena) {
     printf("}\n");
 }
 
+
+void daaFreeLinearArena(daaLinearArena* IN_Arena) { free(IN_Arena); }
+
 // SMART ARENA
-daaSmartRegion* daaInitSmartRegion() {
+daaSmartArena* daaCreateSmartArena(size_t IN_RegionSize) {
+    if (IN_RegionSize < 8) {
+        daaPANIC("Failed to create new SmartArena. Requested region size is below minimum limit.");
+    }
+
+    daaSmartArena* NewArena = malloc(sizeof(daaSmartArena));
+
+    NewArena->REGION_SIZE = IN_RegionSize;
+    NewArena->FirstRegion = NULL;
+    NewArena->CurrRegion = NULL;
+    NewArena->RegionCount = 0;
+
+    return NewArena;
+}
+
+daaSmartRegion* daaInitSmartRegion(size_t IN_RegionSize) {
     daaSmartRegion* Result = malloc(sizeof(daaSmartRegion));
     if (Result == NULL) {
         daaPANIC("Failed to allocate memory for region.");
     }
-    Result->Capacity = DAA_REGION_SIZE;
+    Result->Capacity = IN_RegionSize;
     Result->AllocNum = 0;
-    Result->Data = malloc(DAA_REGION_SIZE);
+    Result->Data = malloc(IN_RegionSize);
     if (Result->Data == NULL) {
         daaPANIC("Failed to allocate memory for region data.");
     }
@@ -123,7 +157,7 @@ daaSmartRegion* daaInitSmartRegion() {
     if (Result->AllocList == NULL) {
         daaPANIC("Failed to allocate memory for region allocation list.");
     }
-    Result->AllocList->Size = DAA_REGION_SIZE;
+    Result->AllocList->Size = IN_RegionSize;
     Result->AllocList->isAlloc = 0;
     Result->AllocList->Next = NULL;
 
@@ -212,12 +246,13 @@ bool daaSmartRegionFree(daaSmartRegion* IN_Region, void* IN_Ptr) {
 }
 
 void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize) {
-    if (IN_AllocSize > DAA_REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
+    if (IN_Arena == NULL) { daaPANIC("Failed to allocate, Arena is NULL"); }
+    if (IN_AllocSize > IN_Arena->REGION_SIZE) { daaPANIC("Failed to allocate, Requested size is above limit."); }
 
     if (IN_AllocSize <= 0) { return NULL; }
 
     if (IN_Arena->FirstRegion == NULL) {
-        IN_Arena->FirstRegion = daaInitSmartRegion();
+        IN_Arena->FirstRegion = daaInitSmartRegion(IN_Arena->REGION_SIZE);
         IN_Arena->CurrRegion = IN_Arena->FirstRegion;
         IN_Arena->RegionCount = 1;
     }
@@ -230,7 +265,7 @@ void* daaSmartAlloc(daaSmartArena* IN_Arena, size_t IN_AllocSize) {
     }
 
     // Wee need a new Region
-    IN_Arena->CurrRegion->Next = daaInitSmartRegion();
+    IN_Arena->CurrRegion->Next = daaInitSmartRegion(IN_Arena->REGION_SIZE);
     daaSmartRegion* Temp = IN_Arena->CurrRegion->Next;
     Temp->Prev = IN_Arena->CurrRegion;
     IN_Arena->CurrRegion = IN_Arena->CurrRegion->Next;
@@ -276,6 +311,8 @@ void daaSmartFreeArena(daaSmartArena* IN_Arena) {
     IN_Arena->FirstRegion = NULL;
     IN_Arena->CurrRegion = NULL;
     IN_Arena->RegionCount = 0;
+
+    free(IN_Arena);
 }
 
 void daaPrintSmartRegion(daaSmartRegion* IN_Region) {

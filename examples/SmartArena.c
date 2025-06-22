@@ -7,25 +7,26 @@
 int main() {
 
     const int MAX = 64;
+    const int REGION_SIZE = 256;
 
-    daaSmartArena SArena = {0};
+    daaSmartArena* SArena = daaCreateSmartArena(REGION_SIZE);
 
     void* PtrList[ITERATIONS] = {0};
 
     for (int X = 0; X < ITERATIONS; X++) {
-        PtrList[X] = daaSmartAlloc(&SArena, rand() % (MAX + 1));
+        PtrList[X] = daaSmartAlloc(SArena, rand() % (MAX + 1));
     }
 
     for (int X = 0; X < ITERATIONS; X++) {
         if (PtrList[X] == NULL) {continue;}
         if ((rand() % 3) == 0) {
-            daaSmartFree(&SArena, PtrList[X]);
+            daaSmartFree(SArena, PtrList[X]);
         }
     }
 
 
-    daaPrintSmartArena(&SArena);
-    daaSmartFreeArena(&SArena);
+    daaPrintSmartArena(SArena);
+    daaSmartFreeArena(SArena);
 
     return 0;
 }

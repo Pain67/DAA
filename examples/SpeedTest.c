@@ -1,5 +1,3 @@
-#define DAA_REGION_SIZE 4 * 1024
-
 #define DAA_IMPLEMENTATION
 #include "DAA.h"
 
@@ -12,6 +10,7 @@
 
 uint16_t RndList[DAA_MAX_INUM] = {0};
 FILE* TargetFilePtr;
+const size_t REGION_SIZE = 4 * 1024;
 
 void TestLinearArena(size_t IN_Iteration, size_t IN_Rounds) {
     double TotalTime = 0;
@@ -20,15 +19,16 @@ void TestLinearArena(size_t IN_Iteration, size_t IN_Rounds) {
     double MinTime = 100000;
 
     for (size_t X = 0; X < IN_Rounds; X++) {
-        daaLinearArena LArena = {0};
+        daaLinearArena* LArena = daaCreateLinearArena(REGION_SIZE);
         clock_t Begin = clock();
         for (uint32_t X = 0; X < IN_Iteration; X++) {
-            void* Temp = daaLinearAlloc(&LArena, RndList[X]);
+            void* Temp = daaLinearAlloc(LArena, RndList[X]);
         }
         clock_t End = clock();
         double Spent = (double)(End - Begin) / CLOCKS_PER_SEC;
 
-        daaLinearFree(&LArena);
+        daaLinearFree(LArena);
+        daaFreeLinearArena(LArena);
 
         TotalTime += Spent;
         if (Spent < MinTime) { MinTime = Spent; }
@@ -69,15 +69,15 @@ void TestSmartArena(size_t IN_Iteration, size_t IN_Rounds) {
     double MinTime = 100000;
 
     for (size_t X = 0; X < IN_Rounds; X++) {
-        daaSmartArena SArena = {0};
+        daaSmartArena* SArena = daaCreateSmartArena(REGION_SIZE);
         clock_t Begin = clock();
         for (uint32_t X = 0; X < IN_Iteration; X++) {
-            void* Temp = daaSmartAlloc(&SArena, RndList[X]);
+            void* Temp = daaSmartAlloc(SArena, RndList[X]);
         }
         clock_t End = clock();
         double Spent = (double)(End - Begin) / CLOCKS_PER_SEC;
 
-        daaSmartFreeArena(&SArena);
+        daaSmartFreeArena(SArena);
 
         TotalTime += Spent;
         if (Spent < MinTime) { MinTime = Spent; }
