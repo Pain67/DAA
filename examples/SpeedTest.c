@@ -6,9 +6,9 @@
 #include <time.h>
 
 #define DAA_ALLOC_RANGE 128
-#define DAA_MAX_INUM 10000
+#define DAA_ITERATION_NUM 100000
 
-uint16_t RndList[DAA_MAX_INUM] = {0};
+uint16_t RndList[DAA_ITERATION_NUM] = {0};
 FILE* TargetFilePtr;
 const size_t REGION_SIZE = 4 * 1024;
 
@@ -157,23 +157,14 @@ void TestMalloc(size_t IN_Iteration, size_t IN_Rounds) {
     fputs(Buffer, TargetFilePtr);
 }
 
-// Number of elements in IterationList
-#define INum 4
 // Number of Rounds per Iteration
 #define RNum 100
 
 int main() {
 
-    size_t IterationList[INum] = {
-        10,
-        10,
-        10,
-        DAA_MAX_INUM
-    };
-
     // Generate a list of Random Number
     // Store them so all 3 type use the same sequence of numbers
-    for (uint32_t X = 0; X < DAA_MAX_INUM; X++) {
+    for (uint32_t X = 0; X < DAA_ITERATION_NUM; X++) {
         // Generate a random number in range of [1..DAA_ALLOC_RANGE]
         RndList[X] = (rand() % (DAA_ALLOC_RANGE + 1)) + 1;
     }
@@ -185,55 +176,48 @@ int main() {
 
     // ---------------------------------------------------------------------------------
     printf("----- Random Size Allocation -----\n");
-    for (size_t X = 0; X < INum; X++) {
-        printf("Random size allocation (%d iteration)\n", IterationList[X]);
-        TestMalloc(IterationList[X], RNum);
-        TestLinearArena(IterationList[X], RNum);
-        TestSmartArena(IterationList[X], RNum);
-        printf("\n");
-    }
+    printf("Random size allocation (%d iteration)\n", DAA_ITERATION_NUM);
+    TestMalloc(DAA_ITERATION_NUM, RNum);
+    TestLinearArena(DAA_ITERATION_NUM, RNum);
+    TestSmartArena(DAA_ITERATION_NUM, RNum);
+    printf("\n");
 
     // ---------------------------------------------------------------------------------
-
-    for (uint32_t X = 0; X < DAA_MAX_INUM; X++) { RndList[X] = 1; }
+    for (uint32_t X = 0; X < DAA_ITERATION_NUM; X++) { RndList[X] = 1; }
     printf("----- Fixed Size Allocation (1) -----\n");
-    for (size_t X = 0; X < INum; X++) {
-        printf("Fixed size allocation (1 bytes - %d iteration)\n", IterationList[X]);
-        TestMalloc(IterationList[X], RNum);
-        TestLinearArena(IterationList[X], RNum);
-        TestSmartArena(IterationList[X], RNum);
-        printf("\n");
-    }
+    printf("Fixed size allocation (1 bytes - %d iteration)\n", DAA_ITERATION_NUM);
+    TestMalloc(DAA_ITERATION_NUM, RNum);
+    TestLinearArena(DAA_ITERATION_NUM, RNum);
+    TestSmartArena(DAA_ITERATION_NUM, RNum);
+    printf("\n");
+
     // ---------------------------------------------------------------------------------
-    for (uint32_t X = 0; X < DAA_MAX_INUM; X++) { RndList[X] = 2; }
+    for (uint32_t X = 0; X < DAA_ITERATION_NUM; X++) { RndList[X] = 2; }
     printf("----- Fixed Size Allocation (2) -----\n");
-    for (size_t X = 0; X < INum; X++) {
-        printf("Fixed size allocation (2 bytes - %d iteration)\n", IterationList[X]);
-        TestMalloc(IterationList[X], RNum);
-        TestLinearArena(IterationList[X], RNum);
-        TestSmartArena(IterationList[X], RNum);
-        printf("\n");
-    }
+    printf("Fixed size allocation (2 bytes - %d iteration)\n", DAA_ITERATION_NUM);
+    TestMalloc(DAA_ITERATION_NUM, RNum);
+    TestLinearArena(DAA_ITERATION_NUM, RNum);
+    TestSmartArena(DAA_ITERATION_NUM, RNum);
+    printf("\n");
+
     // ---------------------------------------------------------------------------------
-    for (uint32_t X = 0; X < DAA_MAX_INUM; X++) { RndList[X] = 4; }
+    for (uint32_t X = 0; X < DAA_ITERATION_NUM; X++) { RndList[X] = 4; }
     printf("----- Fixed Size Allocation (4) -----\n");
-    for (size_t X = 0; X < INum; X++) {
-        printf("Fixed size allocation (4 bytes - %d iteration)\n", IterationList[X]);
-        TestMalloc(IterationList[X], RNum);
-        TestLinearArena(IterationList[X], RNum);
-        TestSmartArena(IterationList[X], RNum);
-        printf("\n");
-    }
+    printf("Fixed size allocation (4 bytes - %d iteration)\n", DAA_ITERATION_NUM);
+    TestMalloc(DAA_ITERATION_NUM, RNum);
+    TestLinearArena(DAA_ITERATION_NUM, RNum);
+    TestSmartArena(DAA_ITERATION_NUM, RNum);
+    printf("\n");
+
     // ---------------------------------------------------------------------------------
-    for (uint32_t X = 0; X < DAA_MAX_INUM; X++) { RndList[X] = 8; }
+    for (uint32_t X = 0; X < DAA_ITERATION_NUM; X++) { RndList[X] = 8; }
     printf("----- Fixed Size Allocation (8) -----\n");
-    for (size_t X = 0; X < INum; X++) {
-        printf("Fixed size allocation (8 bytes - %d iteration)\n", IterationList[X]);
-        TestMalloc(IterationList[X], RNum);
-        TestLinearArena(IterationList[X], RNum);
-        TestSmartArena(IterationList[X], RNum);
-        printf("\n");
-    }
+    printf("Fixed size allocation (8 bytes - %d iteration)\n", DAA_ITERATION_NUM);
+    TestMalloc(DAA_ITERATION_NUM, RNum);
+    TestLinearArena(DAA_ITERATION_NUM, RNum);
+    TestSmartArena(DAA_ITERATION_NUM, RNum);
+    printf("\n");
+
     // ---------------------------------------------------------------------------------
 
     fclose(TargetFilePtr);
