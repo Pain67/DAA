@@ -115,34 +115,34 @@ Conditions:
 ### Random Size Allocation (1 - 128 bytes) - 100,000 allocations - 100 rounds per allocator
 | Allocator | Total Time (sec) | AvgTime (sec) | Min (sec) | Max (sec) |
 | --------- |:----------------:|:-------------:|:---------:|:---------:|
-| malloc | 0.00004 | 0.000000 | 0.000000 | 0.000001 |
-| LinearArena | 0.001599 | 0.000016 | 0.000011 | 0.000261 |
-| SmartArena | 9.924666 | 0.099247 | 0.095623 | 0.112102 |
+| malloc | 0.364637 | 0.003646 | 0.003508 | 0.004200 |
+| LinearArena | 0.056531 | 0.000565 | 0.000535 | 0.002657 |
+| SmartArena | 43.347657 | 0.433477 | 0.416348 | 0.490264 |
 
 ### Fixed Size Allocation (1 bytes) - 100,000 allocations - 100 rounds per allocator
 | Allocator | Total Time (sec) | AvgTime (sec) | Min (sec) | Max (sec) |
 | --------- |:----------------:|:-------------:|:---------:|:---------:|
-| malloc | 0.000037 | 0.000000 | 0.000000 | 0.000001 |
-| LinearArena | 0.000676 | 0.000007 | 0.000006 | 0.000012 |
-| SmartArena | 4.452587 | 0.044526 | 0.04429 | 0.045088 |
+| malloc | 0.173043 | 0.001730 | 0.000806 | 0.001928 |
+| LinearArena | 0.042576 | 0.000426 | 0.000420 | 0.000462 |
+| SmartArena | 26.343469 | 0.263435 | 0.262812 | 0.266840 |
 
 ### Fixed Size Allocation (2 bytes) - 100,000 allocations - 100 rounds per allocator
 | Allocator | Total Time (sec) | AvgTime (sec) | Min (sec) | Max (sec) |
 | --------- |:----------------:|:-------------:|:---------:|:---------:|
-| malloc | 0.000037 | 0.000000 | 0.000000 | 0.000001 |
-| LinearArena | 0.000668 | 0.000007 | 0.000006 | 0.000007 |
-| SmartArena | 4.486149 | 0.044861 | 0.044523 | 0.045276 |
+| malloc | 0.174699 | 0.001747 | 0.001113 | 0.002013 |
+| LinearArena | 0.041967 | 0.00420 | 0.000414 | 0.000483 |
+| SmartArena | 13.691177 | 0.136912 | 0.136433 | 0.138459 |
 
 ### Fixed Size Allocation (4 bytes) - 100,000 allocations - 100 rounds per allocator
 | Allocator | Total Time (sec) | AvgTime (sec) | Min (sec) | Max (sec) |
 | --------- |:----------------:|:-------------:|:---------:|:---------:|
-| malloc | 0.000037 | 0.000000 | 0.000000 | 0.000001 |
-| LinearArena | 0.000692 | 0.000007 | 0.000006 | 0.000008 |
-| SmartArena | 4.628752 | 0.046288 | 0.046049 | 0.047677 |
+| malloc | 0.174723 | 0.001747 | 0.001106 | 0.001843 |
+| LinearArena | 0.042169 | 0.000422 | 0.000414 | 0.000541 |
+| SmartArena | 7.819559 | 0.078196 | 0.077879 | 0.079236 |
 
 ### Fixed Size Allocation (8 bytes) - 100,000 allocations - 100 rounds per allocator
 | Allocator | Total Time (sec) | AvgTime (sec) | Min (sec) | Max (sec) |
 | --------- |:----------------:|:-------------:|:---------:|:---------:|
-| malloc | 0.000037 | 0.000000 | 0.000000 | 0.000001 |
-| LinearArena | 0.000732 | 0.000007 | 0.000007 | 0.000008 |
-| SmartArena | 4.715081 | 0.047151 | 0.046905 | 0.048235 |
+| malloc | 0.174381 | 0.001744 | 0.001121 | 0.001810 |
+| LinearArena | 0.043265 | 0.000433 | 0.000425 | 0.000643 |
+| SmartArena | 5.506161 | 0.055062 | 0.054698 | 0.056333 |
