@@ -3,7 +3,7 @@
 CC=gcc
 LD=ld
 INCLUDE=-I../src
-CFLAGS=$(INCLUDE) -O0
+CFLAGS=$(INCLUDE) -O3
 LIB_HEADERS=../src/DAA.h
 LIB_SOURCES=../src/DAA.c
 OUTPUT=build/
