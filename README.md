@@ -107,7 +107,7 @@ There are 5 different types of test completed:
 
 Conditions:
  + Page Size set to 4096 bytes
- + For each test there are 100,000 allocations repeated 100 times and get the Total, Avg, Min and Max time. Malloc used as a base line to see how the 2 different arena compares to it (spoiler not very well...)
+ + For each test there are 100,000 allocations repeated 100 times and get the Total, Avg, Min and Max time. Malloc used as a base line to see how the 2 different arena compares to it
  + For the Random number allocation, a list of 100,000 random number generated ahead of time so all 3 uses the same list of random numbers.
  + The tests below only test for allocation and not free.
 
